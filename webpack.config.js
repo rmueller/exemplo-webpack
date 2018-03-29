@@ -1,7 +1,21 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const webpack = require("webpack");
+
+// Try the environment variable, otherwise use root
+const ASSET_PATH = process.env.ASSET_PATH || '//localhost:8080/';
 
 module.exports = {
+  output: {
+    publicPath: ASSET_PATH
+  },
+  devServer: {
+    compress: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*"
+    },
+    port: 8080
+  },
   watch: true,
   module: {
     rules: [{
@@ -39,11 +53,16 @@ module.exports = {
   plugins: [
     new HtmlWebPackPlugin({
       template: "./src/index.html",
-      filename: "./index.html"
+      filename: "./index.html",
+      hash: true
     }),
     new MiniCssExtractPlugin({
       filename: "[name].css",
       chunkFilename: "[id].css"
+    }),
+    new webpack.DefinePlugin({
+      'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
     })
+
   ]
 }
