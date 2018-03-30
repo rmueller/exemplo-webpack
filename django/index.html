@@ -1,0 +1,35 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    // Isso aqui deve ir para um js comum, que é usado para carregar o js e css
+    // esse 'loader' que é esse arquivo, pode ser gerado pelo webpack do projeto
+    var js = function(url) {
+        $.ajax(url, {
+            cache: true,
+            dataType: 'script'
+        });
+    }
+
+    var css = function(url) {
+        $('<link>', {
+            rel: 'stylesheet',
+            type: 'text/css',
+            href: url
+        }).appendTo('head');
+    }
+    // aqui o webpack deverá adicionar o hash
+    css('http://localhost:8080/main.css');
+    js('http://localhost:8080/main.js');
+</script>
+</head>
+
+<body>
+	<div>Eu sou menu</div>
+
+	<div id="app"></div>
+		
+	<div> footer </div>
+</body>
+
+</html>	
