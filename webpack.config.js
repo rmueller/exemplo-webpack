@@ -1,16 +1,17 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpack = require("webpack");
+const path = require('path');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-// Try the environment variable, otherwise use root
-const ASSET_PATH = process.env.ASSET_PATH || '//localhost:8080/';
 
 module.exports = {
   output: {
-    publicPath: ASSET_PATH
+    filename: '[name].[chunkhash].js',
+    path: path.resolve(__dirname, 'dist')
   },
   devServer: {
-    compress: true,
+    compress: false,
     headers: {
       "Access-Control-Allow-Origin": "*"
     },
@@ -51,17 +52,15 @@ module.exports = {
     }]
   },
   plugins: [
+    new CleanWebpackPlugin(['dist']),
     new HtmlWebPackPlugin({
       template: "./src/index.html",
       filename: "./index.html",
-      hash: true
+      hash: false
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].css",
+      filename: "[name].[contenthash].css",
       chunkFilename: "[id].css"
-    }),
-    new webpack.DefinePlugin({
-      'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
     })
 
   ]
