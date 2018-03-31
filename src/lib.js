@@ -1,3 +1,3 @@
 export function minhaFuncaoQueDefineTitle() {
-    return "Meu retorno, seu title";
+    return "Meu retorno, seus title";
 }

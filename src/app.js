@@ -4,7 +4,8 @@ import {
 } from './lib.js'
 
 export function MeuApp() {
-
+	var outrodiv = [];
+	var outrodiv = [];
 	var div = document.createElement('div');
 	div.innerHTML = template({
 		segundoNivel: "Segundo nível!",

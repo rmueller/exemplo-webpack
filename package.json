@@ -23,7 +23,9 @@
     "webpack": "^4.4.1",
     "webpack-cli": "^2.0.13",
     "webpack-dev-server": "^3.1.1",
-    "webpack-s3-deployer": "^0.1.6"
+    "webpack-merge": "^4.1.2",
+    "webpack-s3-deployer": "^0.1.6",
+    "webpack-s3-plugin": "^1.0.0-rc.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -31,7 +33,8 @@
     "dev": "webpack --mode development --watch",
     "start": "webpack-dev-server --mode development",
     "build": "webpack --mode production",
-    "staging": "webpack --mode production --environment staging --deploy"
+    "staging": "webpack --mode production --env.deploy=staging",
+    "production": "webpack --mode production --env.deploy=production"
   },
   "keywords": [],
   "author": "",

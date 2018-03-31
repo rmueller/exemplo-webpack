@@ -3,21 +3,19 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpack = require("webpack");
 const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+var S3Plugin = require('webpack-s3-plugin');
 
 module.exports = (env) => {
-    return {
+    let retorno = {
         output: {
             filename: '[name].[chunkhash].js',
             path: path.resolve(__dirname, 'dist')
         },
         devServer: {
-            compress: false,
             headers: {
                 "Access-Control-Allow-Origin": "*"
-            },
-            port: 8080
+            }
         },
-        watch: true,
         module: {
             rules: [{
                 test: /\.js$/,
@@ -52,59 +50,56 @@ module.exports = (env) => {
             }]
         },
         plugins: [
-            new EventialsJsDeployer({
-                environments: {
-                    staging: {
-                        region: 'us-west-1',
-                        params: {
-                            Bucket: 'static-stg.eventials.com'
-                        }
-                    },
-                    production: {
-                        region: 'us-west-2',
-                        params: {
-                            Bucket: 'somebucket.com',
-                            DistributionId: 'BUCKETIDHERE'
-                        }
-                    }
-                },
-                options: {
-                    autoRun: true,
-                    //        entryHtml: 'index.html',
-                    //        invalidateEntry: true,
-                    //        generateDeployFile: true,
-                    versioning: {
-                        timestamp: false,
-                        gitHash: true,
-                        custom: "meudir"
-                    },
-                    robots: {
-                        generate: false,
-                        //        },
-                        //        slack: {
-                        //          channels: ['#channel1', '#channel2'],
-                        //          webhook: '<Webhook URL>',
-                        //          appTitle: '<Application Title>',
-                        //          appLink: '<Application URL>',
-                        //          payload: {
-                        //            username: '<BotName>',
-                        //            icon_emoji: ':ghost:',
-                        //            text: '<Slack Notification Text>'
-                        //          }
-                    }
-                }
-            }),
             new CleanWebpackPlugin(['dist']),
-            new HtmlWebPackPlugin({
-                template: "./src/index.html",
-                filename: "./index.html",
-                hash: false
-            }),
-            new MiniCssExtractPlugin({
-                filename: "[name].[contenthash].css",
-                chunkFilename: "[id].css"
-            })
-
+            HtmlPlugin(),
+            CssExtractPlugin()
         ]
+    };
+    if (env && env.deploy) {
+        switch (env.deploy) {
+            case 'production':
+                retorno.plugins.push(s3Plugin('static.eventials.com'));
+                break;
+            case 'staging':
+                retorno.plugins.push(s3Plugin('static-stg.eventials.com'));
+                break;
+            default:
+                throw "Deve-se informar ambiente 'production' ou 'staging'";
+        }
+
     }
+    return retorno;
+}
+
+
+function HtmlPlugin() {
+    return new HtmlWebPackPlugin({
+        template: "./src/index.html",
+        filename: "./index.html",
+        hash: false
+    });
+}
+
+function CssExtractPlugin() {
+    return new MiniCssExtractPlugin({
+        filename: "[name].[contenthash].css",
+        chunkFilename: "[id].css"
+    });
+}
+
+function s3Plugin(bucket) {
+    return new S3Plugin({
+        include: /.*\.(css|js)/,
+        s3Options: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            region: 'us-east-1'
+        },
+        basePathTransform: () => {
+            return "live-tv/assets/"
+        },
+        s3UploadOptions: {
+            Bucket: bucket
+        }
+    });
 }

@@ -1,2 +1,2 @@
 require('babel-register');
-module.exports = require('./webpack.config.es6.js');
+module.exports = require('./webpack.config.common.js');
