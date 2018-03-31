@@ -66,7 +66,6 @@ module.exports = (env) => {
             default:
                 throw "Deve-se informar ambiente 'production' ou 'staging'";
         }
-
     }
     return retorno;
 }
